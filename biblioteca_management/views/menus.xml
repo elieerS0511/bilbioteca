@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú Principal -->
+    <menuitem id="menu_biblioteca" name="Biblioteca" sequence="10"/>
+    
+    <!-- Submenús -->
+    <menuitem id="menu_biblioteca_operaciones" name="Registro" parent="menu_biblioteca" sequence="10"/>
+    <menuitem id="menu_biblioteca_libros" name="Libros" parent="menu_biblioteca" sequence="20"/>
+    <menuitem id="menu_biblioteca_miembros" name="Miembros" parent="menu_biblioteca" sequence="30"/>
+    
+    <!-- Items de Menú -->
+    <menuitem id="menu_prestamos" name="Préstamos" parent="menu_biblioteca_operaciones" action="action_prestamo" sequence="10"/>
+    <menuitem id="menu_libros" name="Libros" parent="menu_biblioteca_libros" action="action_libro" sequence="10"/>
+    <menuitem id="menu_autores" name="Autores" parent="menu_biblioteca_libros" action="action_autor" sequence="20"/>
+    <menuitem id="menu_miembros" name="Miembros" parent="menu_biblioteca_miembros" action="action_miembro" sequence="10"/>
+</odoo>

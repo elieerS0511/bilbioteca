@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+           VISTAS DE LIBROS
+    ====================================================== -->
+    <record id="view_libro_tree" model="ir.ui.view">
+        <field name="name">biblioteca.libro.tree</field>
+        <field name="model">biblioteca.libro</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="autor_id"/>
+                <field name="estado"/>
+                <field name="genero"/>
+                <field name="multa"/>
+                <field name="monto"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_libro_form" model="ir.ui.view">
+        <field name="name">biblioteca.libro.form</field>
+        <field name="model">biblioteca.libro</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="autor_id"/>
+                            <field name="editorial"/>
+                        </group>
+                        <group>
+                            <field name="estado" readonly="1"/>
+                            <field name="genero"/>
+                            <field name="anio_publicacion"/>
+                        </group>
+                    </group>
+                    <group string="Precios por Prestamo">
+                        <field name="monto"/>
+                        <field name="multa"/>
+                    </group>
+                    <group>
+                        <field name="descripcion" nolabel="1"/>
+                    </group>
+                    <field name="prestamo_ids"> 
+                        <list> 
+                            <field name="name"/> 
+                            <field name="miembro_id"/> 
+                            <field name="fecha_prestamo"/> 
+                            <field name="estado"/> 
+                        </list> 
+                    </field>
+
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =====================================================
+           VISTAS DE AUTORES
+    ====================================================== -->
+    <record id="view_autor_tree" model="ir.ui.view">
+        <field name="name">biblioteca.autor.tree</field>
+        <field name="model">biblioteca.autor</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="nacionalidad"/>
+                <field name="total_libros"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_autor_form" model="ir.ui.view">
+        <field name="name">biblioteca.autor.form</field>
+        <field name="model">biblioteca.autor</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="nacionalidad"/>
+                            <field name="fecha_nacimiento"/>
+                        </group>
+                        <group>
+                            <field name="total_libros" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="biografia" nolabel="1"/>
+                    </group>
+                    <field name="libro_ids">
+                        <list>
+                            <field name="name"/>
+                            <field name="estado"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =====================================================
+           VISTAS DE MIEMBROS
+    ====================================================== -->
+    <record id="view_miembro_tree" model="ir.ui.view">
+        <field name="name">biblioteca.miembro.tree</field>
+        <field name="model">biblioteca.miembro</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="codigo_miembro"/>
+                <field name="name"/>
+                <field name="dni"/>
+                <field name="email"/>
+                <field name="telefono"/>
+                <field name="estado"/>
+                <field name="prestamos_activos"/>
+                <field name="deuda_total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_miembro_form" model="ir.ui.view">
+        <field name="name">biblioteca.miembro.form</field>
+        <field name="model">biblioteca.miembro</field>
+        <field name="arch" type="xml">
+            <form string="Miembro de Biblioteca">
+                <sheet>
+
+                    <group>
+                        <group>
+                            <field name="codigo_miembro" readonly="1"/>
+                            <field name="name"/>
+                            <field name="dni"/>
+                            <field name="estado"/>
+                        </group>
+
+                        <group>
+                            <field name="email"/>
+                            <field name="telefono"/>
+                            <field name="direccion"/>
+                        </group>
+
+                        <group>
+                            <field name="fecha_registro" readonly="1"/>
+                            <field name="prestamos_activos" readonly="1"/>
+                            <field name="deuda_total" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Préstamos">
+                            <field name="prestamo_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="libro_id"/>
+                                    <field name="fecha_prestamo"/>
+                                    <field name="fecha_devolucion"/>
+                                    <field name="estado"/>
+                                    <field name="multa"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =====================================================
+           ACCIONES
+    ====================================================== -->
+    <record id="action_libro" model="ir.actions.act_window">
+        <field name="name">Libros</field>
+        <field name="res_model">biblioteca.libro</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_autor" model="ir.actions.act_window">
+        <field name="name">Autores</field>
+        <field name="res_model">biblioteca.autor</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_miembro" model="ir.actions.act_window">
+        <field name="name">Miembros</field>
+        <field name="res_model">biblioteca.miembro</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- =====================================================
+           MENÚ PRINCIPAL
+    ====================================================== -->
+  <!--  <menuitem id="menu_biblioteca_root" name="Biblioteca"/>
+
+    <menuitem id="menu_biblioteca_libros"
+              name="Libros"
+              parent="menu_biblioteca_root"
+              action="action_libro"/>
+
+    <menuitem id="menu_biblioteca_autores"
+              name="Autores"
+              parent="menu_biblioteca_root"
+              action="action_autor"/>
+
+    <menuitem id="menu_biblioteca_miembros"
+              name="Miembros"
+              parent="menu_biblioteca_root"
+              action="action_miembro"/>
+
+-->
+</odoo>

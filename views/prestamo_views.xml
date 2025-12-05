@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <!-- Vista de árbol (lista) para Préstamos -->
+        <record id="view_prestamo_tree" model="ir.ui.view">
+        <field name="name">biblioteca.prestamo.tree</field>
+        <field name="model">biblioteca.prestamo</field>
+        <field name="arch" type="xml">
+            <list>
+                <!-- Campos visibles en la vista de lista -->
+                <field name="name"/>  <!-- Referencia del préstamo -->
+                <field name="libro_id"/>  <!-- Libro prestado -->
+                <field name="miembro_id"/>  <!-- Miembro -->
+                <field name="fecha_prestamo"/>  <!-- Fecha de inicio -->
+                <field name="fecha_devolucion"/>  <!-- Fecha límite -->
+                <field name="estado"/>  <!-- Estado actual -->
+                <field name="multa"/>  <!-- Multa acumulada -->
+                <field name="monto"/>  <!-- Precio del préstamo -->
+            </list>
+        </field>
+        </record>
+        <!-- Vista de formulario para Préstamos -->
+        <record id="view_prestamo_form" model="ir.ui.view">
+        <field name="name">biblioteca.prestamo.form</field>
+        <field name="model">biblioteca.prestamo</field>
+        <field name="arch" type="xml">
+            <form string="Préstamo de Libro">
+                <!-- HEADER: Contiene botones de acciones específicas -->
+                <header>
+                    <!-- Botón para marcar como entregado -->
+                    <button name="action_entregado"
+                            string="Entregado"
+                            type="object"
+                            class="btn-success"
+                            invisible="estado == 'devuelto'"  
+                    /> <!-- Solo visible si no está devuelto -->
+
+                    <!-- Botón para calcular multa -->
+                    <button name="action_calcular_multa"
+                            string="Calcular Multa"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="estado == 'devuelto'"
+                    /> <!-- Solo visible si no está devuelto -->
+                </header>
+                <sheet>
+                    <!-- Grupo 1: Información principal -->
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>  <!-- Referencia (solo lectura) -->
+                            <field name="libro_id"/>  <!-- Selección de libro -->
+                            <field name="estado" readonly="1"/>  <!-- Estado (solo lectura) -->
+                            <field name="monto" readonly="1"/>  <!-- Monto (solo lectura) -->
+                            <field name="multa" readonly="1"/>  <!-- Multa (solo lectura) -->
+                        </group>
+
+                        <!-- Grupo 2: Información del miembro -->
+                        <group>
+                            <field name="miembro_id"/>  <!-- Selección de miembro -->
+                            <field name="email"/>  <!-- Email (se autocompleta) -->
+                            <field name="telefono"/>  <!-- Teléfono (se autocompleta) -->
+                        </group>
+                    </group>
+                    <!-- Grupo 3: Fechas -->
+                    <group string="Fechas">
+                        <field name="fecha_prestamo"/>  <!-- Fecha de préstamo -->
+                        <field name="fecha_devolucion"/>  <!-- Fecha de devolución (calculada) -->
+                    </group>
+                </sheet>
+            </form>
+        </field>
+        </record>
+        <!-- Acción de ventana para Préstamos (define cómo se abre la vista) -->
+        <record id="action_prestamo" model="ir.actions.act_window">
+        <field name="name">Préstamos</field>
+        <field name="res_model">biblioteca.prestamo</field>
+        <field name="view_mode">list,form</field>  <!-- Modos de vista disponibles -->
+        </record>
+</odoo>

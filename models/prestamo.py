@@ -72,14 +72,21 @@ class Prestamo(models.Model):
         """
         Se sobrescribe el método 'create' para añadir lógica de negocio adicional:
         1. Asigna un número de secuencia único ('name') al nuevo préstamo.
-        2. Actualiza el estado del libro a 'prestado' para que no pueda ser prestado por otra persona.
+        2. Copia el `monto` desde el libro para asegurar consistencia.
+        3. Actualiza el estado del libro a 'prestado'.
         """
         # Genera una secuencia única si no se proporciona una.
         if vals.get('name', 'Nuevo') == 'Nuevo':
             vals['name'] = self.env['ir.sequence'].next_by_code('biblioteca.prestamo.sequence') or 'Nuevo'
 
+        # Si se está creando un préstamo para un libro, copia su monto.
+        # Esto es crucial para creaciones programáticas donde el `onchange` no se dispara.
+        if vals.get('libro_id'):
+            libro = self.env['biblioteca.libro'].browse(vals['libro_id'])
+            vals['monto'] = libro.monto
+
         # Llama al método 'create' original para crear el registro en la base de datos.
-        prestamo = super().create(vals)
+        prestamo = super(Prestamo, self).create(vals)
 
         # Cambia el estado del libro a 'prestado'.
         if prestamo.libro_id:
@@ -88,40 +95,52 @@ class Prestamo(models.Model):
         return prestamo
 
     # ==================== MÉTODOS DE ACCIÓN (Botones) ====================
-    def action_devolver_libro(self):
+    def action_entregado(self):
         """
-        Acción ejecutada al intentar devolver un libro.
-        Verifica si la devolución se realiza fuera de plazo para cambiar el estado a 'atrasado'.
-        Si se devuelve a tiempo, el estado del libro vuelve a 'disponible'.
+        Acción principal para procesar la devolución de un libro.
+        Esta es la lógica que se ejecuta al presionar el botón 'Marcar como Entregado'.
+        - Verifica si el libro se devuelve con retraso.
+        - Si hay retraso, cambia el estado a 'Atrasado' y calcula la multa.
+        - Si se devuelve a tiempo, cambia el estado a 'Devuelto'.
+        - En cualquier caso, el libro vuelve a estar 'Disponible'.
         """
-        self.ensure_one()
-        hoy = fields.Datetime.now()
+        for prestamo in self:
+            # Comprobar si la fecha de devolución está definida para evitar errores
+            if not prestamo.fecha_devolucion:
+                prestamo.estado = 'devuelto'
+                if prestamo.libro_id:
+                    prestamo.libro_id.estado = 'disponible'
+                continue
 
-        if hoy > self.fecha_devolucion:
-            self.estado = 'atrasado'
-            self.libro_id.estado = 'disponible' # Aunque esté atrasado, ya está disponible
-            self.action_calcular_multa() # Calcula la multa correspondiente.
-        else:
-            self.estado = 'devuelto'
-            self.libro_id.estado = 'disponible'
+            hoy = fields.Datetime.now()
+            if hoy > prestamo.fecha_devolucion:
+                prestamo.estado = 'atrasado'
+                prestamo.action_calcular_multa()  # Calcula la multa correspondiente
+            else:
+                prestamo.estado = 'devuelto'
+                prestamo.multa = 0.0
+
+            # Marcar el libro como disponible
+            if prestamo.libro_id:
+                prestamo.libro_id.estado = 'disponible'
 
     def action_calcular_multa(self):
         """
-        Calcula la multa basándose en los días de atraso y el costo de multa diario del libro.
-        Esta acción puede ser llamada manualmente o por otros métodos.
+        Calcula la multa por días de atraso usando la multa por día del libro.
+        Esta acción puede ser llamada desde el botón 'Calcular Multa' o internamente.
         """
-        self.ensure_one()
-        if self.fecha_devolucion and fields.Datetime.now() > self.fecha_devolucion:
-            dias_atraso = (fields.Datetime.now() - self.fecha_devolucion).days
-            multa_dia = self.libro_id.multa or 0.0
-            self.multa = dias_atraso * multa_dia
+        for prestamo in self:
+            if not prestamo.fecha_devolucion:
+                prestamo.multa = 0.0
+                continue
 
-    def action_entregado(self):
-        """
-        Acción final que marca el préstamo como 'devuelto' y el libro como 'disponible'.
-        Es el paso final del proceso de devolución.
-        """
-        self.ensure_one()
-        self.estado = 'devuelto'
-        if self.libro_id:
-            self.libro_id.estado = 'disponible'
+            hoy = fields.Datetime.now()
+            if hoy > prestamo.fecha_devolucion:
+                dias_atraso = (hoy - prestamo.fecha_devolucion).days
+                multa_dia = prestamo.libro_id.multa or 0.0
+                prestamo.multa = dias_atraso * multa_dia
+                # Asegura que el estado del préstamo sea consistente con la existencia de una multa.
+                if prestamo.multa > 0:
+                    prestamo.estado = 'atrasado'
+            else:
+                prestamo.multa = 0.0

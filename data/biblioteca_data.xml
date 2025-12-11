@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Este archivo XML contiene datos iniciales o de configuración que se cargan
+    cuando el módulo se instala o actualiza.
+    En este caso, define la secuencia automática para los números de referencia
+    de los préstamos.
+-->
 <odoo>
-    <!-- Secuencia para Préstamos -->
+    <!--
+        DEFINICIÓN DE SECUENCIA PARA `biblioteca.prestamo`
+
+        Este registro `ir.sequence` crea un generador de identificadores únicos
+        que se utilizará para el campo `name` del modelo de préstamo.
+        - `code`: Identificador único para llamar a esta secuencia desde el código Python.
+        - `prefix`: Texto que aparecerá al inicio de cada número de secuencia (ej. PREST/...).
+        - `padding`: Número de dígitos que tendrá la secuencia (ej. 00001).
+    -->
     <record id="seq_prestamo" model="ir.sequence">
-        <field name="name">Secuencia Préstamos Biblioteca</field>
+        <field name="name">Secuencia de Préstamos de Biblioteca</field>
         <field name="code">biblioteca.prestamo.sequence</field>
         <field name="prefix">PREST/</field>
         <field name="padding">5</field>

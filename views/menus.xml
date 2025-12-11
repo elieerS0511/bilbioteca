@@ -1,16 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Este archivo XML define la estructura de menús para el módulo de biblioteca.
+    Los menús organizan el acceso a las diferentes vistas (libros, autores, préstamos, etc.)
+    desde la interfaz principal de Odoo.
+-->
 <odoo>
-    <!-- Menú Principal: Punto de entrada de la aplicación Biblioteca -->
-    <menuitem id="menu_biblioteca" name="Biblioteca" sequence="10"/>
-    
-    <!-- Submenús: Organizan las funcionalidades en categorías -->
-    <menuitem id="menu_biblioteca_operaciones" name="Registro" parent="menu_biblioteca" sequence="10"/>
-    <menuitem id="menu_biblioteca_libros" name="Libros" parent="menu_biblioteca" sequence="20"/>
-    <menuitem id="menu_biblioteca_miembros" name="Miembros" parent="menu_biblioteca" sequence="30"/>
-    
-    <!-- Items de Menú: Enlazan a las vistas de cada modelo -->
-    <menuitem id="menu_prestamos" name="Préstamos" parent="menu_biblioteca_operaciones" action="action_prestamo" sequence="10"/>
-    <menuitem id="menu_libros" name="Libros" parent="menu_biblioteca_libros" action="action_libro" sequence="10"/>
-    <menuitem id="menu_autores" name="Autores" parent="menu_biblioteca_libros" action="action_autor" sequence="20"/>
-    <menuitem id="menu_miembros" name="Miembros" parent="menu_biblioteca_miembros" action="action_miembro" sequence="10"/>
+    <!--
+        MENÚ RAÍZ (PRINCIPAL)
+        Este es el menú de nivel superior que aparecerá en la barra de aplicaciones de Odoo.
+        Todos los demás menús de este módulo colgarán de él.
+    -->
+    <menuitem id="menu_biblioteca"
+              name="Biblioteca"
+              sequence="10"/>
+
+    <!-- ====================================================== -->
+    <!--                  CATEGORÍAS DE MENÚS                   -->
+    <!-- ====================================================== -->
+
+    <!--
+        Submenú para las operaciones diarias de la biblioteca.
+        Agrupa acciones como la gestión de préstamos.
+    -->
+    <menuitem id="menu_biblioteca_operaciones"
+              name="Operaciones"
+              parent="menu_biblioteca"
+              sequence="10"/>
+
+    <!-- Submenú para el catálogo de libros y autores. -->
+    <menuitem id="menu_biblioteca_catalogo"
+              name="Catálogo"
+              parent="menu_biblioteca"
+              sequence="20"/>
+
+    <!-- Submenú para la gestión de personas (miembros). -->
+    <menuitem id="menu_biblioteca_personas"
+              name="Personas"
+              parent="menu_biblioteca"
+              sequence="30"/>
+
+    <!-- ====================================================== -->
+    <!--                ELEMENTOS DE MENÚ FINALES               -->
+    <!-- ====================================================== -->
+    <!--
+        Cada uno de estos `menuitem` enlaza a una `action` específica,
+        que a su vez abre la vista correspondiente (lista, formulario, etc.).
+    -->
+
+    <!-- Enlace a la acción de Préstamos (action_prestamo) -->
+    <menuitem id="menu_prestamos"
+              name="Préstamos"
+              parent="menu_biblioteca_operaciones"
+              action="action_prestamo"
+              sequence="10"/>
+
+    <!-- Enlace a la acción de Libros (action_libro) -->
+    <menuitem id="menu_libros"
+              name="Libros"
+              parent="menu_biblioteca_catalogo"
+              action="action_libro"
+              sequence="10"/>
+
+    <!-- Enlace a la acción de Autores (action_autor) -->
+    <menuitem id="menu_autores"
+              name="Autores"
+              parent="menu_biblioteca_catalogo"
+              action="action_autor"
+              sequence="20"/>
+
+    <!-- Enlace a la acción de Miembros (action_miembro) -->
+    <menuitem id="menu_miembros"
+              name="Miembros"
+              parent="menu_biblioteca_personas"
+              action="action_miembro"
+              sequence="10"/>
 </odoo>

@@ -1,78 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Este archivo XML define las interfaces de usuario (vistas) para el modelo
+    de Préstamo (`biblioteca.prestamo`).
+    Contiene la vista de lista (tree), el formulario (form) y la acción de
+    ventana que permite acceder a estas vistas.
+-->
 <odoo>
-        <!-- Vista de árbol (lista) para Préstamos -->
-        <record id="view_prestamo_tree" model="ir.ui.view">
+    <!--
+        VISTA DE ÁRBOL (LISTA) PARA `biblioteca.prestamo`
+        Muestra una lista de todos los préstamos con sus datos más relevantes.
+    -->
+    <record id="view_prestamo_tree" model="ir.ui.view">
         <field name="name">biblioteca.prestamo.tree</field>
         <field name="model">biblioteca.prestamo</field>
         <field name="arch" type="xml">
-            <list>
-                <!-- Campos visibles en la vista de lista -->
-                <field name="name"/>  <!-- Referencia del préstamo -->
-                <field name="libro_id"/>  <!-- Libro prestado -->
-                <field name="miembro_id"/>  <!-- Miembro -->
-                <field name="fecha_prestamo"/>  <!-- Fecha de inicio -->
-                <field name="fecha_devolucion"/>  <!-- Fecha límite -->
-                <field name="estado"/>  <!-- Estado actual -->
-                <field name="multa"/>  <!-- Multa acumulada -->
-                <field name="monto"/>  <!-- Precio del préstamo -->
-            </list>
+            <tree>
+                <field name="name"/>
+                <field name="libro_id"/>
+                <field name="miembro_id"/>
+                <field name="fecha_prestamo"/>
+                <field name="fecha_devolucion"/>
+                <field name="estado"/>
+                <field name="multa"/>
+                <field name="monto"/>
+            </tree>
         </field>
-        </record>
-        <!-- Vista de formulario para Préstamos -->
-        <record id="view_prestamo_form" model="ir.ui.view">
+    </record>
+
+    <!--
+        VISTA DE FORMULARIO PARA `biblioteca.prestamo`
+        Define la estructura para crear o editar un registro de préstamo.
+    -->
+    <record id="view_prestamo_form" model="ir.ui.view">
         <field name="name">biblioteca.prestamo.form</field>
         <field name="model">biblioteca.prestamo</field>
         <field name="arch" type="xml">
             <form string="Préstamo de Libro">
-                <!-- HEADER: Contiene botones de acciones específicas -->
+                <!--
+                    La cabecera (header) contiene los botones de acción que ejecutan
+                    métodos del modelo de Python.
+                -->
                 <header>
-                    <!-- Botón para marcar como entregado -->
+                    <!-- Botón para marcar el préstamo como 'devuelto' y el libro como 'disponible' -->
                     <button name="action_entregado"
-                            string="Entregado"
+                            string="Marcar como Entregado"
                             type="object"
-                            class="btn-success"
-                            invisible="estado == 'devuelto'"  
-                    /> <!-- Solo visible si no está devuelto -->
+                            class="btn-primary"
+                            invisible="estado == 'devuelto'"/>
 
-                    <!-- Botón para calcular multa -->
+                    <!-- Botón para recalcular la multa en caso de atraso -->
                     <button name="action_calcular_multa"
-                            string="Calcular Multa"
+                            string="Calcular Multa por Atraso"
                             type="object"
                             class="btn-secondary"
-                            invisible="estado == 'devuelto'"
-                    /> <!-- Solo visible si no está devuelto -->
+                            invisible="estado == 'devuelto'"/>
                 </header>
                 <sheet>
-                    <!-- Grupo 1: Información principal -->
+                    <!-- Grupo principal para organizar la información del préstamo -->
                     <group>
+                        <!-- Columna izquierda: Datos del préstamo y el libro -->
                         <group>
-                            <field name="name" readonly="1"/>  <!-- Referencia (solo lectura) -->
-                            <field name="libro_id"/>  <!-- Selección de libro -->
-                            <field name="estado" readonly="1"/>  <!-- Estado (solo lectura) -->
-                            <field name="monto" readonly="1"/>  <!-- Monto (solo lectura) -->
-                            <field name="multa" readonly="1"/>  <!-- Multa (solo lectura) -->
+                            <field name="name" readonly="1"/>
+                            <field name="libro_id"/>
+                            <field name="estado" readonly="1"/>
+                            <field name="monto" readonly="1"/>
+                            <field name="multa" readonly="1"/>
                         </group>
-
-                        <!-- Grupo 2: Información del miembro -->
+                        <!-- Columna derecha: Datos del miembro -->
                         <group>
-                            <field name="miembro_id"/>  <!-- Selección de miembro -->
-                            <field name="email"/>  <!-- Email (se autocompleta) -->
-                            <field name="telefono"/>  <!-- Teléfono (se autocompleta) -->
+                            <field name="miembro_id"/>
+                            <field name="email" readonly="1"/>
+                            <field name="telefono" readonly="1"/>
                         </group>
                     </group>
-                    <!-- Grupo 3: Fechas -->
-                    <group string="Fechas">
-                        <field name="fecha_prestamo"/>  <!-- Fecha de préstamo -->
-                        <field name="fecha_devolucion"/>  <!-- Fecha de devolución (calculada) -->
+                    <!-- Sección dedicada a las fechas del préstamo -->
+                    <group string="Fechas del Préstamo">
+                        <field name="fecha_prestamo"/>
+                        <field name="fecha_devolucion" readonly="1"/>
                     </group>
                 </sheet>
             </form>
         </field>
-        </record>
-        <!-- Acción de ventana para Préstamos (define cómo se abre la vista) -->
-        <record id="action_prestamo" model="ir.actions.act_window">
+    </record>
+
+    <!--
+        ACCIÓN DE VENTANA PARA `biblioteca.prestamo`
+        Esta acción es la que se llama desde un menú para abrir la vista de préstamos.
+        Define el modelo a utilizar y los modos de vista disponibles (lista y formulario).
+    -->
+    <record id="action_prestamo" model="ir.actions.act_window">
         <field name="name">Préstamos</field>
         <field name="res_model">biblioteca.prestamo</field>
-        <field name="view_mode">list,form</field>  <!-- Modos de vista disponibles -->
-        </record>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ¡Registra un nuevo préstamo de libro!
+            </p>
+            <p>
+                Desde aquí puedes gestionar todos los libros prestados a los miembros.
+            </p>
+        </field>
+    </record>
 </odoo>
